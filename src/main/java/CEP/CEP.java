@@ -33,7 +33,7 @@ public class CEP {
         Logger.getRootLogger().addAppender(appender);
         Logger.getRootLogger().setLevel((Level) Level.WARN);
         
-        NominalLabels labels = new NominalLabels();
+        HeaderManager labels = new HeaderManager();
       
        
         //The Configuration is meant only as an initialization-time object.

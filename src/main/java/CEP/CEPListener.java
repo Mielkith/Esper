@@ -19,11 +19,11 @@ import weka.core.Instances;
 public class CEPListener {
     private FastVector dataSet = new FastVector();
     private FastVector eventValues = new FastVector();
-    NominalLabels labels;
+    HeaderManager labels;
     int columnNumbers[];
     
     
-    public void SetLabels(NominalLabels labels){
+    public void SetLabels(HeaderManager labels){
         this.labels = labels;
     }   
     
