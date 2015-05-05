@@ -6,6 +6,7 @@
 package CEP;
 
 import com.espertech.esper.client.EventBean;
+import java.util.ArrayList;
 import weka.associations.Apriori;
 import weka.core.Attribute;
 import weka.core.FastVector;
@@ -17,8 +18,8 @@ import weka.core.Instances;
  * @author gs023850
  */
 public class CEPListener {
-    private FastVector dataSet = new FastVector();
-    private FastVector eventValues = new FastVector();
+    private ArrayList<Attribute> dataSet = new FastVector();
+    private ArrayList<Attribute> eventValues = new FastVector();
     HeaderManager labels;
     int columnNumbers[];
     
@@ -42,17 +43,17 @@ public class CEPListener {
         //create the column name and type, these are strings
         //http://weka.wikispaces.com/Creating+an+ARFF+file
          Instances data;
-          FastVector atts = new FastVector();
+          ArrayList<Attribute> atts = new ArrayList<Attribute>();
            
              
            for (int j = 0; j < columnNumbers.length; j++)
            {
-                FastVector values = new FastVector();
+                ArrayList<Object> values = new ArrayList<Object>();
                 for (int i = 0; i < labels.NominalCount(j) ; i++)
                 {
-                    values.addElement(labels.GetLabel(columnNumbers[j], i));
+                    values.add(labels.GetLabel(columnNumbers[j], i));
                 }
-                atts.addElement(new Attribute(labels.GetHeader(columnNumbers[j]), values));
+                atts.add(new Attribute(labels.GetHeader(columnNumbers[j]), values));
            }
 
            data = new Instances("Title", atts, 0);
@@ -80,7 +81,7 @@ public class CEPListener {
             System.out.println(e);
         }
         
-        FastVector rules[] = aprioriObj.getAllTheRules();
+        ArrayList<Object>[] rules = aprioriObj.getAllTheRules();
         
        
          }

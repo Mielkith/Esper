@@ -6,11 +6,15 @@
 package CEP;
 
 import com.espertech.esper.client.EPRuntime;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
+import weka.core.Instances;
 
 /**
  *
@@ -32,28 +36,33 @@ public class GenerateStream implements Runnable{
         }
         
        public void MakeStream() {
-            File file = new File("C:\\Users\\Weary\\Documents\\w4ndata\\w4ndata.csv");
-            
+            File file = new File("C:\\Users\\Weary\\Documents\\w4ndata\\w4ndata.arff");
+            ArrayList<String> header = new ArrayList<String>();
             String pc =  System.getProperty("user.dir").toString();   
             if (pc.contains("gs023850"))
             {
-                file = new File("C:\\Users\\gs023850\\Documents\\w4ndata\\w4ndata.csv");
+                file = new File("C:\\Users\\gs023850\\Documents\\w4ndata\\w4ndata.arff");
             }
-
+            try {
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            Instances data = new Instances(reader);
+            reader.close();
+            data.setClassIndex((data.numAttributes() -1));
+            
             long wait = 0;
             long previousTimeStamp = 0;
             long timeStamp = 0;
-            try {
+            
                 FileInputStream inputStream = new FileInputStream(file);
                 Scanner sc = new Scanner(inputStream);
 
-                   boolean isHeader = true;
                     while(sc.hasNext()) {
-                           if (isHeader){
-                              String[] header = sc.nextLine().split(",");
-                              isHeader = false;
+                        String line  = sc.nextLine();
+                           if (line.startsWith("@")){
+                               header.add(line);
                            }
                            else {
+                              
                               currentLine = sc.nextLine().split(","); 
                               String stamp = currentLine[0].substring(14, 16);
                               timeStamp = Long.parseLong(currentLine[0].substring(14, 16));
@@ -106,6 +115,11 @@ public class GenerateStream implements Runnable{
                 System.out.println("Waiting: " + wait);
                 Thread.sleep(wait);
                 return previousTimeStamp;
+        }
+        
+        void CleanHeader(ArrayList<String> header)
+        {
+            
         }
       
 }

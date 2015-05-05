@@ -64,7 +64,7 @@ public class CEP {
         EPStatement cepStatement = cepAdm.createEPL(
                selectStatement); 
         CEPListener listener = new CEPListener();
-         cepStatement.addListener(listener);
+        cepStatement.addListener(listener);
          //set the labels for the nominal attributes
          listener.SetLabels(labels);
          listener.SetColNumber(colNumbers);
