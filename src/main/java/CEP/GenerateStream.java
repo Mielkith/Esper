@@ -6,37 +6,29 @@
 package CEP;
 
 import com.espertech.esper.client.EPRuntime;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Scanner;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ArffLoader;
-import weka.core.converters.ArffLoader.ArffReader;
 
 /**
  *
  * @author gs023850
  */
 public class GenerateStream implements Runnable{
-        public EPRuntime cepRT;
-         public String[] currentLine;
-         public String getStringAttribute(int i) {return currentLine[i];}
-         public Double getDoubleAttribute(int i) {return Double.parseDouble(currentLine[i]);}
-         private int[] colNumbers;
-        public GenerateStream(EPRuntime cepRT, int[] colNumbers){
+        private EPRuntime cepRT;
+        public GenerateStream(EPRuntime cepRT){
             this.cepRT = cepRT;
-            this.colNumbers = colNumbers; 
         }
-        
+
         public void run() {
             MakeStream();
         }
+        
+        
         
        public void MakeStream() {
             File file = new File("C:\\Users\\Weary\\Documents\\w4ndata\\w4ndata.arff");
@@ -47,11 +39,13 @@ public class GenerateStream implements Runnable{
                 file = new File("C:\\Users\\gs023850\\Documents\\w4ndata\\w4ndata.arff");
             }
             try {
-                
+             
              ArffLoader loader = new ArffLoader(); 
              loader.setFile(file);
              Instances structure = loader.getStructure();
              structure.setClassIndex(structure.numAttributes() - 1);
+             
+             HeaderManager.SetStructure(new Instances(structure));
              Instance current;
              long previousTimeStamp = 0;
              String timeStamp = "0";
@@ -122,5 +116,7 @@ public class GenerateStream implements Runnable{
         {
             
         }
+        
+        
       
 }

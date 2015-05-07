@@ -8,8 +8,11 @@ package CEP;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.UpdateListener;
+import com.espertech.esper.event.DecoratingEventBean;
 import com.espertech.esper.event.NaturalEventBean;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import weka.associations.Apriori;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
@@ -37,32 +40,39 @@ public class CEPListener implements UpdateListener{
     
  public void update(EventBean[] newData, EventBean[] oldData)  {
          
-     System.out.println("Event received: "
-                            + newData[0].getUnderlying()
-         );
-         if (newData.length > 2)
-         {
-        
-        Apriori aprioriObj = new weka.associations.Apriori();
-        Instances data;
-        for(EventBean bean:newData)
+     System.out.println("Event received: " + newData[0].getUnderlying());
+     
+     
+        if (newData.length > 2)
         {
-            EventType event = bean.getEventType();
-            Instance inst = bean.getUnderlying();
-            data.add((Attribute()));
+            try{
+                Instances data = HeaderManager.GetStructure();
+                Apriori aprioriObj = new weka.associations.Apriori();
+                for(EventBean bean:newData)
+                {
+                    EventType event = bean.getEventType();
+                    Object inst = bean.getUnderlying();
+                    data.add((Instance)inst);
+                }
+                try{
+                    aprioriObj.buildAssociations(data);
+                }
+                catch (Exception e)
+                {
+                    System.out.println(e);
+                }
+                
+                ArrayList<Object>[] rules = aprioriObj.getAllTheRules();
+                
+                
+            }
+            catch (InterruptedException ex)
+            {
+                Logger.getLogger(CEPListener.class.getName()).log(Level.SEVERE, null,ex);
+            }
+
+
         }
-        try{
-        aprioriObj.buildAssociations(data);
-        }
-        catch (Exception e)
-        {
-            System.out.println(e);
-        }
-        
-        ArrayList<Object>[] rules = aprioriObj.getAllTheRules();
-        
-       
-         }
 
          
     }

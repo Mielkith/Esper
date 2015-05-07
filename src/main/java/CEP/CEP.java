@@ -11,24 +11,25 @@ import com.espertech.esper.client.EPRuntime;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EPStatement;
-import com.espertech.esper.client.StatementAwareUpdateListener;
 import com.espertech.esper.client.UpdateListener;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import weka.core.Instance;
+import weka.core.Instances;
 
 /**
  *
  * @author gs023850
  */
 public class CEP {
-             static int[] colNumbers = {10,28,0,16,13,30,25,22};
     /** 
      * @param args the command line arguments
      */
-
+    
+        private static GenerateStream streamGen;
+  
         public static void main(String[] args) throws Exception{
   
         SimpleLayout layout = new SimpleLayout();
@@ -68,14 +69,18 @@ public class CEP {
         
         EPStatement cepStatement = cepAdm.createEPL(
                selectStatement); 
-        CEPListener listener = new CEPListener();
-        cepStatement.addListener((UpdateListener) listener);
+       
          //set the labels for the nominal attributes
        //  listener.SetLabels(labels);
-         listener.SetColNumber(colNumbers);
-         Thread t = new Thread(new GenerateStream(cepRT, colNumbers));
+         //listener.SetColNumber(colNumbers);
+         streamGen = new GenerateStream(cepRT);
+         Thread t = new Thread(streamGen);
+           
+         
+         CEPListener listener = new CEPListener();
+         cepStatement.addListener((UpdateListener) listener);
          t.run();
-               
+                  
            
         }
         
