@@ -6,10 +6,13 @@
 package CEP;
 
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.UpdateListener;
+import com.espertech.esper.event.NaturalEventBean;
 import java.util.ArrayList;
 import weka.associations.Apriori;
 import weka.core.Attribute;
-import weka.core.FastVector;
+import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
 
@@ -17,15 +20,14 @@ import weka.core.Instances;
  *
  * @author gs023850
  */
-public class CEPListener {
-    private ArrayList<Attribute> dataSet = new FastVector();
-    private ArrayList<Attribute> eventValues = new FastVector();
-    HeaderManager labels;
+public class CEPListener implements UpdateListener{
+    private ArrayList<Attribute> dataSet = new ArrayList<Attribute>();
+    private ArrayList<Attribute> eventValues = new ArrayList<Attribute>();
     int columnNumbers[];
     
     
     public void SetLabels(HeaderManager labels){
-        this.labels = labels;
+       // this.labels = labels;
     }   
     
     public void SetColNumber(int colNumbers[])
@@ -40,39 +42,15 @@ public class CEPListener {
          );
          if (newData.length > 2)
          {
-        //create the column name and type, these are strings
-        //http://weka.wikispaces.com/Creating+an+ARFF+file
-         Instances data;
-          ArrayList<Attribute> atts = new ArrayList<Attribute>();
-           
-             
-           for (int j = 0; j < columnNumbers.length; j++)
-           {
-                ArrayList<Object> values = new ArrayList<Object>();
-                for (int i = 0; i < labels.NominalCount(j) ; i++)
-                {
-                    values.add(labels.GetLabel(columnNumbers[j], i));
-                }
-                atts.add(new Attribute(labels.GetHeader(columnNumbers[j]), values));
-           }
-
-           data = new Instances("Title", atts, 0);
-           
-         
-           
-           for (int i = 0; i < newData.length; i++) {
-                Instance inst = new Instance(columnNumbers.length);
-                for (int j =0; j < columnNumbers.length; j++)
-                {
-                  inst.setValue(j,newData[i].get("eventType").toString());
-                }
-               data.add(inst);
-           }
-           
-   
-       
+        
         Apriori aprioriObj = new weka.associations.Apriori();
-      
+        Instances data;
+        for(EventBean bean:newData)
+        {
+            EventType event = bean.getEventType();
+            Instance inst = bean.getUnderlying();
+            data.add((Attribute()));
+        }
         try{
         aprioriObj.buildAssociations(data);
         }

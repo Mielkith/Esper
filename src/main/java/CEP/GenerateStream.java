@@ -14,7 +14,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import weka.core.Instance;
 import weka.core.Instances;
+import weka.core.converters.ArffLoader;
+import weka.core.converters.ArffLoader.ArffReader;
 
 /**
  *
@@ -44,33 +47,30 @@ public class GenerateStream implements Runnable{
                 file = new File("C:\\Users\\gs023850\\Documents\\w4ndata\\w4ndata.arff");
             }
             try {
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-            Instances data = new Instances(reader);
-            reader.close();
-            data.setClassIndex((data.numAttributes() -1));
-            
-            long wait = 0;
-            long previousTimeStamp = 0;
-            long timeStamp = 0;
-            
-                FileInputStream inputStream = new FileInputStream(file);
-                Scanner sc = new Scanner(inputStream);
+                
+             ArffLoader loader = new ArffLoader(); 
+             loader.setFile(file);
+             Instances structure = loader.getStructure();
+             structure.setClassIndex(structure.numAttributes() - 1);
+             Instance current;
+             long previousTimeStamp = 0;
+             String timeStamp = "0";
+             long wait = 0;
+             
+            while ((current = loader.getNextInstance(structure)) != null){
 
-                    while(sc.hasNext()) {
-                        String line  = sc.nextLine();
-                           if (line.startsWith("@")){
-                               header.add(line);
-                           }
-                           else {
-                              
-                              currentLine = sc.nextLine().split(","); 
-                              String stamp = currentLine[0].substring(14, 16);
-                              timeStamp = Long.parseLong(currentLine[0].substring(14, 16));
+            timeStamp = current.stringValue(0);
+            cepRT.sendEvent(current);
+            System.out.println("Sending event");
+            previousTimeStamp = WaitTime(timeStamp, previousTimeStamp, wait);
+            }
+          
+             
+                            
                               //attribute 11 - event name, 15 - element class name, 29 - severity
                               //20 - active, 22 - duration, 25 - is problem, 28 - catgeory
-                              
-                              int i = 0;
-                              Tick tick = new Tick();
+
+                            /*  Tick tick = new Tick();
                               tick.PopulateTick(getStringAttribute(colNumbers[i++]), 
                                                 getStringAttribute(colNumbers[i++]), 
                                                 getStringAttribute(colNumbers[i++]),                                                 
@@ -82,9 +82,8 @@ public class GenerateStream implements Runnable{
                               previousTimeStamp = WaitTime(timeStamp, previousTimeStamp, wait);
                               cepRT.sendEvent(tick);
 
-                              System.out.println("Sending event");
-                          } 
-                    }       
+                              System.out.println("Sending event");*/
+
             }
             catch (Exception e) {
                 
@@ -99,19 +98,21 @@ public class GenerateStream implements Runnable{
                      System.out.println("Unable to convert to time to number - bad time");
                 }
                 else {
-                    return;
+                    System.out.println(e.toString());
+                    
                 }
             
             }
         }
-        
-        long WaitTime(long timeStamp, long previousTimeStamp, long wait) throws InterruptedException{
-            
-                wait = (timeStamp - previousTimeStamp)*1000;
+        ///Extract the time to hang the thread from the previous and next timestamp
+        long WaitTime(String timeStamp, long previousTimeStamp, long wait) throws InterruptedException{
+               timeStamp = timeStamp.substring(14, 16);
+               long time = Long.parseLong(timeStamp);
+                wait = (time - previousTimeStamp)*1000;
                               if (wait < 0 || previousTimeStamp == 0) {
                                   wait = 1; 
                               }
-                previousTimeStamp = timeStamp;
+                previousTimeStamp = time;
                 System.out.println("Waiting: " + wait);
                 Thread.sleep(wait);
                 return previousTimeStamp;

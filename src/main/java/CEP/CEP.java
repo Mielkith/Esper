@@ -11,10 +11,13 @@ import com.espertech.esper.client.EPRuntime;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EPStatement;
+import com.espertech.esper.client.StatementAwareUpdateListener;
+import com.espertech.esper.client.UpdateListener;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
+import weka.core.Instance;
 
 /**
  *
@@ -33,13 +36,13 @@ public class CEP {
         Logger.getRootLogger().addAppender(appender);
         Logger.getRootLogger().setLevel((Level) Level.WARN);
         
-        HeaderManager labels = new HeaderManager();
+      //  HeaderManager labels = new HeaderManager();
       
        
         //The Configuration is meant only as an initialization-time object.
         Configuration cepConfig = new Configuration();
         // We register Ticks as objects the engine will have to handle
-        cepConfig.addEventType("Tick",Tick.class.getName());
+        cepConfig.addEventType("Instance",Instance.class.getName());
 
         // We setup the engine
         EPServiceProvider cep = EPServiceProviderManager.getProvider("myCEPEngine",cepConfig);
@@ -51,7 +54,7 @@ public class CEP {
         EPAdministrator cepAdm = cep.getEPAdministrator();
         
         String  selectStatement =  
-           "select attribute1 as "  + labels.GetHeader(colNumbers[i++]) + ", "
+        /*   "select attribute1 as "  + labels.GetHeader(colNumbers[i++]) + ", "
                 + "attribute2 as "  + labels.GetHeader(colNumbers[i++]) + ", "
                 + "attribute3 as "  + labels.GetHeader(colNumbers[i++]) + ", "
                 + "attribute4 as "  + labels.GetHeader(colNumbers[i++]) + ", "
@@ -59,19 +62,20 @@ public class CEP {
                 + "attribute6 as "  + labels.GetHeader(colNumbers[i++]) + ", "
                 + "attribute7 as "  + labels.GetHeader(colNumbers[i++]) + ", "
                 + "attribute8 as " + labels.GetHeader(colNumbers[i++])
-                + " from Tick.win:time_batch(20 sec)"; 
+                + " from Tick.win:time_batch(20 sec)";*/
+                
+                "select * from Instance.win:time_batch(20 sec)";
         
         EPStatement cepStatement = cepAdm.createEPL(
                selectStatement); 
         CEPListener listener = new CEPListener();
-        cepStatement.addListener(listener);
+        cepStatement.addListener((UpdateListener) listener);
          //set the labels for the nominal attributes
-         listener.SetLabels(labels);
+       //  listener.SetLabels(labels);
          listener.SetColNumber(colNumbers);
          Thread t = new Thread(new GenerateStream(cepRT, colNumbers));
          t.run();
-       
-        
+               
            
         }
         

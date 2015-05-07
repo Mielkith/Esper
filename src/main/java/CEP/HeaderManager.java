@@ -18,7 +18,7 @@ public class HeaderManager {
     
     public HeaderManager() throws Exception 
     {
-    String filePath = "C:\\Users\\gs023850\\Documents\\w4ndata\\distinctValues.csv";
+   /* String filePath = "C:\\Users\\gs023850\\Documents\\w4ndata\\distinctValues.csv";
       //https://github.com/uniVocity/univocity-parsers/#reading-csv
      CsvParserSettings settings = new CsvParserSettings();
      settings.setHeaderExtractionEnabled(true);
