@@ -18,6 +18,8 @@ public  class HeaderManager {
     
     static void SetStructure(Instances structure)
     { ArffStructure = structure;
+     structure.setClassIndex(structure.numAttributes()-6);
+
     lock = false;}
     
     static Instances GetStructure() throws InterruptedException
@@ -25,9 +27,22 @@ public  class HeaderManager {
         while (lock == true){
             Thread.sleep(1);
         }
-        return ArffStructure;}
-    
+        return ArffStructure;
     }
+    
+    
+
+ static Instances GetEmptyStructure() throws InterruptedException
+    {
+        while (lock == true){
+            Thread.sleep(1);
+        }
+        return ArffStructure.stringFreeStructure();
+    }
+    
+    
+
+}
     
 
 

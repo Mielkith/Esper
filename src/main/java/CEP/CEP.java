@@ -28,6 +28,10 @@ public class CEP {
      * @param args the command line arguments
      */
     
+    /**set this to determine the size of the window and the amount to decrease events 
+    *with duration by every update
+    */
+        private static int windowSize = 2;
         private static GenerateStream streamGen;
   
         public static void main(String[] args) throws Exception{
@@ -51,7 +55,6 @@ public class CEP {
         EPRuntime cepRT = cep.getEPRuntime();
 
         // We register an EPL statement
-        int i = 0;
         EPAdministrator cepAdm = cep.getEPAdministrator();
         
         String  selectStatement =  
@@ -65,7 +68,9 @@ public class CEP {
                 + "attribute8 as " + labels.GetHeader(colNumbers[i++])
                 + " from Tick.win:time_batch(20 sec)";*/
                 
-                "select * from Instance.win:time_batch(20 sec)";
+              //"select * from Instance.win:time_batch(10)";
+           "select * from Instance.win:length(2)";
+
         
         EPStatement cepStatement = cepAdm.createEPL(
                selectStatement); 
@@ -75,12 +80,12 @@ public class CEP {
          //listener.SetColNumber(colNumbers);
          streamGen = new GenerateStream(cepRT);
          Thread t = new Thread(streamGen);
-           
+
          
-         CEPListener listener = new CEPListener();
+         CEPListener listener = new CEPListener(windowSize);
          cepStatement.addListener((UpdateListener) listener);
-         t.run();
-                  
+                                   t.run();
+   
            
         }
         

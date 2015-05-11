@@ -43,7 +43,7 @@ public class GenerateStream implements Runnable{
              ArffLoader loader = new ArffLoader(); 
              loader.setFile(file);
              Instances structure = loader.getStructure();
-             structure.setClassIndex(structure.numAttributes() - 1);
+             structure.setClassIndex(structure.numAttributes()-6);
              
              HeaderManager.SetStructure(new Instances(structure));
              Instance current;
@@ -52,7 +52,6 @@ public class GenerateStream implements Runnable{
              long wait = 0;
              
             while ((current = loader.getNextInstance(structure)) != null){
-
             timeStamp = current.stringValue(0);
             cepRT.sendEvent(current);
             System.out.println("Sending event");
