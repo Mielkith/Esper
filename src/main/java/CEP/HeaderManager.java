@@ -18,7 +18,7 @@ public  class HeaderManager {
     
     static void SetStructure(Instances structure)
     { ArffStructure = structure;
-     structure.setClassIndex(structure.numAttributes()-6);
+     structure.setClassIndex(structure.numAttributes()-1);
 
     lock = false;}
     
