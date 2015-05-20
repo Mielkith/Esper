@@ -6,13 +6,11 @@
 package CEP;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.UpdateListener;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import weka.classifiers.Evaluation;
 import weka.classifiers.meta.FilteredClassifier;
-import weka.classifiers.rules.JRip;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.filters.unsupervised.attribute.Remove;
@@ -35,7 +33,7 @@ public class CEPListener implements UpdateListener{
         data = null;
         cumulative = 0;
         training = true;
-        sampleSize = 100;
+        sampleSize = 200;
     }
     
     
@@ -132,7 +130,7 @@ public class CEPListener implements UpdateListener{
   {
             Remove rm = new Remove();
             //rm.setAttributeIndices("1");  // remove 1st attribute
-            JRip c = new JRip();
+            PART c = new PART();
             // meta-classifier
             FilteredClassifier fc = new FilteredClassifier();
             fc.setFilter(rm);
